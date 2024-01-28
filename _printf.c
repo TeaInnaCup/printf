@@ -20,23 +20,19 @@ int _printf(const char *format, ...)
 	{
 		if (*format == '%')
 		{
-			format++; /* Move past '%' */
+			format++;
 			switch (*format)
 			{
 				case 'c':
-					/* Character */
 					count += putchar(va_arg(args, int));
 					break;
 				case 's':
-					/* String */
 					count += printf("%s", va_arg(args, char *));
 					break;
 				case '%':
-					/* Percentage sign */
 					count += putchar('%');
 					break;
 				default:
-					/* Invalid specifier, just print the character */
 					count += putchar('%');
 					count += putchar(*format);
 					break;
@@ -44,10 +40,9 @@ int _printf(const char *format, ...)
 		}
 		else
 		{
-			/* Regular character */
 			count += putchar(*format)
 		}
-		format++; /* Move to the next character in the format string */
+		format++;
 	}
 	va_end(args);
 	return (count);

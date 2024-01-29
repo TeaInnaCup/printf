@@ -34,7 +34,7 @@ int _printf(const char *format, ...)
 			}
 			if (*format == 'r')
 			{
-				count += printf("%.*p", precision, va_arg(args, void *));
+				count += printf("%p", va_arg(args, void *));
 			}
 			else
 			{

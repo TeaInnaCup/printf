@@ -1,5 +1,7 @@
+#include "main.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
 /**
  * _printf - Custom printf function

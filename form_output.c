@@ -57,6 +57,7 @@ int _printf(const char *format, ...)
 						break;
 				}
 			}
+		}
 			else
 			{
 				count += putchar(*format);

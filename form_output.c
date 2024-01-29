@@ -19,37 +19,19 @@ int _printf(const char *format, ...)
 	{
 		if (*format == '%')
 		{
-			int field_width;
 			int precision;
-			field_width = 0;
 			precision = -1;
 			format++;
 
-			/* Parse optional field width */
 			if (*format >= '0' && *format <= '9')
 			{
+				precision = 0;
 				while (*format >= '0' && *format <= '9')
 				{
-					field_width = field_width * 10 + (*format - '0');
+					precision = precision * 10 + (*format - '0');
 					format++;
 				}
 			}
-
-			/* Parse optional precision */
-			if (*format == '.')
-			{
-				format++;
-				if (*format >= '0' && *format <= '9')
-				{
-					precision = 0;
-					while (*format >= '0' && *format <= '9')
-					{
-						precision = precision * 10 + (*format - '0');
-						format++;
-					}
-				}
-			}
-
 			/* Handle conversion specifiers */
 			switch (*format)
 			{

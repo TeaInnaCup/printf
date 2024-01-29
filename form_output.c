@@ -32,31 +32,37 @@ int _printf(const char *format, ...)
 					format++;
 				}
 			}
-			/* Handle conversion specifiers */
-			switch (*format)
+			if (*format == 'r')
 			{
-				case 'c':
-					count += putchar(va_arg(args, int));
-					break;
-				case 's':
-					count += printf("%.*s", precision, va_arg(args, char *));
-					break;
-				case '%':
-					count += putchar('%');
-					break;
-					/* more cases for additional conversion with specifiers */
-				default:
-					count += putchar('%');
-					count += putchar(*format);
-					break;
+				count += printf("%.*p", precision, va_arg(args, void *));
 			}
+			else
+			{
+				/* Handle conversion specifiers */
+				switch (*format)
+				{
+					case 'c':
+						count += putchar(va_arg(args, int));
+						break;
+					case 's':
+						count += printf("%.*s", precision, va_arg(args, char *));
+						break;
+					case '%':
+						count += putchar('%');
+						break;
+						/* more cases for additional conversion with specifiers */
+					default:
+						count += putchar('%');
+						count += putchar(*format);
+						break;
+				}
+			}
+			else
+			{
+				count += putchar(*format);
+			}
+			format++;
 		}
-		else
-		{
-			count += putchar(*format);
-		}
-		format++;
-	}
-	va_end(args);
-	return (count);
+		va_end(args);
+		return (count);
 }

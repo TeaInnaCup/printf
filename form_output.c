@@ -10,18 +10,20 @@
  */
 int _printf(const char *format, ...)
 {
+	int count;
 	va_list args;
 	va_start(args, format);
-
-	int count = 0;
+	count = 0;
 
 	while (*format != '\0')
 	{
 		if (*format == '%')
 		{
+			int field_width;
+			int precision;
+			field_width = 0;
+			precision = -1;
 			format++;
-			int field_width = 0;
-			int precision = -1;
 
 			/* Parse optional field width */
 			if (*format >= '0' && *format <= '9')
@@ -69,7 +71,7 @@ int _printf(const char *format, ...)
 		}
 		else
 		{
-			ount += putchar(*format);
+			count += putchar(*format);
 		}
 		format++;
 	}

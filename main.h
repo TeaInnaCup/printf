@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+<<<<<<< HEAD
 #include <unistd.h>
 #include <limits.h>
 
@@ -18,5 +19,6 @@ int printf_octal(unsigned int num, int printed);
 int printf_unsigned(unsigned int num, int printed);
 int printf_reverse(va_list args, int printed);
 int printf_pointer(va_list args, int printed);
+void handle_s(int *count, va_list args, int precision);
 
 #endif

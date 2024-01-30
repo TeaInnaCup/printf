@@ -1,39 +1,6 @@
 #include "main.h"
 
 /**
- * _printf - outputs specified format
- * @format: the format specifier
- * Return: the formated string
- */
-
-int _printf(const char *format, ...)
-{
-	int printed = 0;
-
-	va_list args;
-
-	va_start(args, format);
-
-	while (*format != '\0')
-	{
-		if (*format == '%')
-		{
-			format++;
-			printed = selector(format, args, printed);
-			format++;
-		}
-		else
-		{
-			_putchar(*format);
-			printed++;
-			format++;
-		}
-	}
-	va_end(args);
-	return (printed);
-}
-
-/**
  * selector - selects format specifiers
  * @args: no. of arguments
  * @printed: the printed characters
@@ -82,5 +49,38 @@ int selector(const char *format, va_list args, int printed)
 		default:
 			break;
 	}
+	return (printed);
+}
+
+/**
+ * _printf - outputs specified format
+ * @format: the format specifier
+ * Return: the formated string
+ */
+
+int _printf(const char *format, ...)
+{
+	int printed = 0;
+
+	va_list args;
+
+	va_start(args, format);
+
+	while (*format != '\0')
+	{
+		if (*format == '%')
+		{
+			format++;
+			printed = selector(format, args, printed);
+			format++;
+		}
+		else
+		{
+			_putchar(*format);
+			printed++;
+			format++;
+		}
+	}
+	va_end(args);
 	return (printed);
 }

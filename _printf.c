@@ -1,86 +1,114 @@
 #include "main.h"
 
-/**
- * selector - selects format specifiers
- * @args: no. of arguments
- * @printed: the printed characters
- * @format: the format specifier
- * Return: printed charcaters
- */
-
-int selector(const char *format, va_list args, int printed)
-{
-	switch (*format)
-	{
-		case 'd':
-		case 'i':
-			printed = printf_integer(args, printed);
-			break;
-		case 'c':
-			_putchar(va_arg(args, int));
-			printed++;
-			break;
-		case 's':
-			printed = printf_string(args, printed);
-			break;
-		case '%':
-			_putchar('%');
-			printed++;
-			break;
-		case 'b':
-			printed = printf_binary(va_arg(args, unsigned int), printed);
-			break;
-		case 'x':
-		case 'X':
-			printed = _x(va_arg(args, unsigned int), printed, (*format == 'X') ? 1 : 0);
-			break;
-		case 'o':
-			printed = printf_octal(va_arg(args, unsigned int), printed);
-			break;
-		case 'u':
-			printed = printf_unsigned(va_arg(args, unsigned int), printed);
-			break;
-		case 'r':
-			printed = printf_reverse(args, printed);
-			break;
-		case 'p':
-			printed = printf_pointer(args, printed);
-			break;
-		default:
-			break;
-	}
-	return (printed);
-}
+void print_buffer(char buffer[], int *buff_ind);
 
 /**
- * _printf - outputs specified format
- * @format: the format specifier
- * Return: the formated string
+ * _printf - produces output according to format 
+ * @format: specified format
+ * Return: printed output
  */
-
 int _printf(const char *format, ...)
 {
-	int printed = 0;
+	int i, printed = 0, printed_chars = 0;
+	int flags, width, precision, size, buff_ind = 0;
+	va_list list;
+	char buffer[BUFF_SIZE];
 
-	va_list args;
+	if (format == NULL)
+		return (-1);
 
-	va_start(args, format);
+	va_start(list, format);
 
-	while (*format != '\0')
+	for (i = 0; format && format[i] != '\0'; i++)
 	{
-		if (*format == '%')
+		if (format[i] != '%')
 		{
-			format++;
-			printed = selector(format, args, printed);
-			format++;
+			buffer[buff_ind++] = format[i];
+			if (buff_ind == BUFF_SIZE)
+				print_buffer(buffer, &buff_ind);
+			printed_chars++;
 		}
 		else
 		{
-			_putchar(*format);
-			printed++;
-			format++;
+			print_buffer(buffer, &buff_ind);
+			flags = get_flags(format, &i);
+			width = get_width(format, &i, list);
+			precision = get_precision(format, &i, list);
+			size = get_size(format, &i);
+			++i;
+			printed = handle_print(format, &i, list, buffer,
+				flags, width, precision, size);
+			if (printed == -1)
+				return (-1);
+			printed_chars += printed;
 		}
 	}
-	va_end(args);
-	return (printed);
+
+	print_buffer(buffer, &buff_ind);
+
+	va_end(list);
+
+	return (printed_chars);
+}
+
+/**
+ * print_buffer - prints the contents of the buffer if it exist
+ * @buffer: array of chars
+ * @buff_ind: index at which to add next char; represents the length
+ */
+void print_buffer(char buffer[], int *buff_ind)
+{
+	if (*buff_ind > 0)
+		write(1, &buffer[0], *buff_ind);
+
+	*buff_ind = 0;
+}
+
+/**
+ * handle_print - handles data type specifiers
+ * @fmt: formatted string in which to print the arguments
+ * @list: list of arguments to be printed.
+ * @ind: index
+ * @buffer: buffer array to handle print.
+ * @flags: calculates active flags
+ * @width: width
+ * @precision: precision specifier
+ * @size: size specifier
+ * Return: 1 or 2;
+ */
+int handle_print(const char *fmt, int *ind, va_list list, char buffer[],
+	int flags, int width, int precision, int size)
+{
+	int i, unknow_len = 0, printed_chars = -1;
+	fmt_t fmt_types[] = {
+		{'c', print_char}, {'s', print_string}, {'%', print_percent},
+		{'i', print_int}, {'d', print_int}, {'b', print_binary},
+		{'u', print_unsigned}, {'o', print_octal}, {'x', print_hexadecimal},
+		{'X', print_hexa_upper}, {'p', print_pointer}, {'S', print_non_printable},
+		{'r', print_reverse}, {'R', print_rot13string}, {'\0', NULL}
+	};
+	for (i = 0; fmt_types[i].fmt != '\0'; i++)
+		if (fmt[*ind] == fmt_types[i].fmt)
+			return (fmt_types[i].fn(list, buffer, flags, width, precision, size));
+
+	if (fmt_types[i].fmt == '\0')
+	{
+		if (fmt[*ind] == '\0')
+			return (-1);
+		unknow_len += write(1, "%%", 1);
+		if (fmt[*ind - 1] == ' ')
+			unknow_len += write(1, " ", 1);
+		else if (width)
+		{
+			--(*ind);
+			while (fmt[*ind] != ' ' && fmt[*ind] != '%')
+				--(*ind);
+			if (fmt[*ind] == ' ')
+				--(*ind);
+			return (1);
+		}
+		unknow_len += write(1, &fmt[*ind], 1);
+		return (unknow_len);
+	}
+	return (printed_chars);
 }

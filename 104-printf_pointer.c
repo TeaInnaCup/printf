@@ -1,51 +1,25 @@
 #include "main.h"
 
 /**
- * print_pointer - handle p specifier
- * @types: list of arguments
- * @buffer: buffer array to handle print
- * @flags: calculates active flags
- * @width: width
- * @precision: precision specifier
- * @size: size specifier
- * Return: memory address print
+ * printf_pointer - prints address of input in hexadecimal format
+ * @l: va_list arguments from _printf
+ * @f: pointer to the struct flags that determines
+ * if a flag is passed to _printf
+ * Return: number of characters printed
  */
-int print_pointer(va_list types, char buffer[],
-	int flags, int width, int precision, int size)
+int printf_pointer(va_list l, flags_t *f)
 {
-	char extra_c = 0, padd = ' ';
-	int ind = BUFF_SIZE - 2, length = 2, padd_start = 1;
-	unsigned long num_addrs;
-	char map_to[] = "0123456789abcdef";
-	void *addrs = va_arg(types, void *);
+	char *str;
+	unsigned long int p = va_arg(l, unsigned long int);
 
-	UNUSED(width);
-	UNUSED(size);
+	register int count = 0;
 
-	if (addrs == NULL)
-		return (write(1, "(nil)", 5));
+	(void)f;
 
-	buffer[BUFF_SIZE - 1] = '\0';
-	UNUSED(precision);
-
-	num_addrs = (unsigned long)addrs;
-
-	while (num_addrs > 0)
-	{
-		buffer[ind--] = map_to[num_addrs % 16];
-		num_addrs /= 16;
-		length++;
-	}
-
-	if ((flags & F_ZERO) && !(flags & F_MINUS))
-		padd = '0';
-	if (flags & F_PLUS)
-		extra_c = '+', length++;
-	else if (flags & F_SPACE)
-		extra_c = ' ', length++;
-
-	ind++;
-
-	return (write_pointer(buffer, ind, length,
-		width, flags, padd, extra_c, padd_start));
+	if (!p)
+		return (_puts("(nil)"));
+	str = convert(p, 16, 1);
+	count += _puts("0x");
+	count += _puts(str);
+	return (count);
 }

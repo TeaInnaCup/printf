@@ -1,52 +1,33 @@
 #include "main.h"
 
 /**
- * print_rot13string - handles R specifier
- * @types: list of arguments
- * @buffer: buffer array to handle print
- * @flags: calculates active flags
- * @width: width
- * @precision: precision specifier
- * @size: size specifier
- * Return: rotating string
+ * printf_Rot13 - prints a string using rot13
+ * @l: list of arguments from _printf
+ * @f: pointer to the struct flags that determines
+ * if a flag is passed to _printf
+ * Return: length of the printed string
  */
-int print_rot13string(va_list types, char buffer[],
-	int flags, int width, int precision, int size)
+int printf_Rot13(va_list l, flags_t *f)
 {
-	char x;
-	char *str;
-	unsigned int i, j;
-	int count = 0;
-	char in[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-	char out[] = "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm";
+	int i, j;
+	char rot13[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	char ROT13[] = "nopqrstuvwxyzabcdefghijklmNOPQRSTUVWXYZABCDEFGHIJKLM";
+	char *s = va_arg(l, char *);
 
-	str = va_arg(types, char *);
-	UNUSED(buffer);
-	UNUSED(flags);
-	UNUSED(width);
-	UNUSED(precision);
-	UNUSED(size);
-
-	if (str == NULL)
-		str = "(AHYY)";
-	for (i = 0; str[i]; i++)
+	(void)f;
+	for (j = 0; s[j]; j++)
 	{
-		for (j = 0; in[j]; j++)
+		if (s[j] < 'A' || (s[j] > 'Z' && s[j] < 'a') || s[j] > 'z')
+			_putchar(s[j]);
+		else
 		{
-			if (in[j] == str[i])
+			for (i = 0; i <= 52; i++)
 			{
-				x = out[j];
-				write(1, &x, 1);
-				count++;
-				break;
+				if (s[j] == rot13[i])
+					_putchar(ROT13[i]);
 			}
 		}
-		if (!in[j])
-		{
-			x = str[i];
-			write(1, &x, 1);
-			count++;
-		}
 	}
-	return (count);
+
+	return (j);
 }

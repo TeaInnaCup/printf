@@ -1,44 +1,68 @@
 #include "main.h"
 
 /**
- * print_int - handles d & i specifiers
- * @types: list of arguments
- * @buffer: buffer array to handle print
- * @flags: calculates active flags
- * @width: width.
- * @precision: precision specifier
- * @size: size specifier
- * Return: integer print
+ * printf_integer - prints an integer
+ * @l: va_list of arguments from _printf
+ * @f: pointer to the struct flags determining
+ * if a flag is passed to _printf
+ * Return: number of character printed
  */
-int print_int(va_list types, char buffer[],
-	int flags, int width, int precision, int size)
+int printf_integer(va_list l, flags_t *f)
 {
-	int i = BUFF_SIZE - 2;
-	int is_negative = 0;
-	long int n = va_arg(types, long int);
-	unsigned long int num;
+	int n = va_arg(l, int);
+	int res = count_digits(n);
 
-	n = convert_size_number(n, size);
+	if (f->space == 1 && f->plus == 0 && n >= 0)
+		res += _putchar(' ');
+	if (f->plus == 1 && n >= 0)
+		res += _putchar('+');
+	if (n <= 0)
+		res++;
+	printf_digits(n);
+	return (res);
+}
 
-	if (n == 0)
-		buffer[i--] = '0';
-
-	buffer[BUFF_SIZE - 1] = '\0';
-	num = (unsigned long int)n;
+/**
+ * printf_digits - helper function that loops through
+ * an integer and prints all its digits
+ * @n: integer to be printed
+ */
+void printf_digits(int n)
+{
+	unsigned int n1;
 
 	if (n < 0)
 	{
-		num = (unsigned long int)((-1) * n);
-		is_negative = 1;
+		_putchar('-');
+		n1 = -n;
 	}
+	else
+		n1 = n;
 
-	while (num > 0)
+	if (n1 / 10)
+		printf_digits(n1 / 10);
+	_putchar((n1 % 10) + '0');
+}
+
+/**
+ * count_digits - returns the number of digits in an integer
+ * for _printf
+ * @i: integer to evaluate
+ * Return: number of digits
+ */
+int count_digits(int i)
+{
+	unsigned int d = 0;
+	unsigned int u;
+
+	if (i < 0)
+		u = i * -1;
+	else
+		u = i;
+	while (u != 0)
 	{
-		buffer[i--] = (num % 10) + '0';
-		num /= 10;
+		u /= 10;
+		d++;
 	}
-
-	i++;
-
-	return (write_number(is_negative, i, buffer, flags, width, precision, size));
+	return (d);
 }

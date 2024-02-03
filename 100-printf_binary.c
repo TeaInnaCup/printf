@@ -1,46 +1,45 @@
 #include "main.h"
 
 /**
- * print_binary - handles b specifier
- * @types: list of arguments
- * @buffer: buffer array to handle print
- * @flags: calculates active flags
- * @width: width.
- * @precision: precision specifier
- * @size: size specifier
- * Return: binary print
+ * printf_binary - prints a number in base 2
+ * @l: va_list arguments from _printf
+ * @f: pointer to the struct that determines
+ * if a flag is passed to _printf
+ * Description: the function calls convert() which in turns converts the input
+ * number into the correct base and returns it as a string
+ * Return: the number of characters printed
  */
-int print_binary(va_list types, char buffer[],
-	int flags, int width, int precision, int size)
+int printf_binary(va_list l, flags_t *f)
 {
-	unsigned int n, m, i, sum;
-	unsigned int a[32];
-	int count;
+	unsigned int num = va_arg(l, unsigned int);
+	char *str = convert(num, 2, 0);
 
-	UNUSED(buffer);
-	UNUSED(flags);
-	UNUSED(width);
-	UNUSED(precision);
-	UNUSED(size);
+	(void)f;
+	return (_puts(str));
+}
 
-	n = va_arg(types, unsigned int);
-	m = 2147483648; /* (2 ^ 31) */
-	a[0] = n / m;
-	for (i = 1; i < 32; i++)
-	{
-		m /= 2;
-		a[i] = (n / m) % 2;
-	}
-	for (i = 0, sum = 0, count = 0; i < 32; i++)
-	{
-		sum += a[i];
-		if (sum || i == 31)
-		{
-			char z = '0' + a[i];
+/**
+ * convert - converts numbers to string
+ * @num: input number
+ * @base: input base
+ * @lowercase: flag if hexa values need to be lowercase
+ * Return: result string
+ */
+char *convert(unsigned long int num, int base, int lowercase)
+{
+	static char *rep;
+	static char buffer[50];
+	char *ptr;
 
-			write(1, &z, 1);
-			count++;
-		}
-	}
-	return (count);
+	rep = (lowercase)
+		? "0123456789abcdef"
+		: "0123456789ABCDEF";
+	ptr = &buffer[49];
+	*ptr = '\0';
+	do {
+		*--ptr = rep[num % base];
+		num /= base;
+	} while (num != 0);
+
+	return (ptr);
 }

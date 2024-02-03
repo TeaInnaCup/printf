@@ -1,155 +1,80 @@
 #include "main.h"
 
 /**
- * print_unsigned - handles u specifier
- * @types: list of arguments
- * @buffer: buffer array to handle print
- * @flags: calculates active flags
- * @width: width
- * @precision: precision specifier
- * @size: size specifier
- * Return: unsigned number print
+ * printf_unsigned - prints an unsigned integer
+ * @l: va_list of arguments from _printf
+ * @f: pointer to the struct flags determining
+ * if a flag is passed to _printf
+ * Return: number of characters printed
  */
-int print_unsigned(va_list types, char buffer[],
-	int flags, int width, int precision, int size)
+int printf_unsigned(va_list l, flags_t *f)
 {
-	int i = BUFF_SIZE - 2;
-	unsigned long int num = va_arg(types, unsigned long int);
+        unsigned int u = va_arg(l, unsigned int);
+        char *str = convert(u, 10, 0);
 
-	num = convert_size_unsgnd(num, size);
-
-	if (num == 0)
-		buffer[i--] = '0';
-
-	buffer[BUFF_SIZE - 1] = '\0';
-
-	while (num > 0)
-	{
-		buffer[i--] = (num % 10) + '0';
-		num /= 10;
-	}
-
-	i++;
-
-	return (write_unsgnd(0, i, buffer, flags, width, precision, size));
+        (void)f;
+        return (_puts(str));
 }
 
 /**
- * print_octal - handles o specifier
- * @types: list of arguments
- * @buffer: buffer array to handle print
- * @flags: calculates active flags
- * @width: width
- * @precision: precision specifier
- * @size: size specifier
- * Return: octal number print
+ * printf_octal - prints a number in base 8
+ * @l: va_list arguments from _printf
+ * @f: pointer to the struct that determines
+ * if a flag is passed to _printf
+ * Description: the function calls convert() which in turns converts the input
+ * number into the correct base and returns it as a string
+ * Return: the number of characters printed
  */
-int print_octal(va_list types, char buffer[],
-	int flags, int width, int precision, int size)
+int printf_octal(va_list l, flags_t *f)
 {
+	unsigned int num = va_arg(l, unsigned int);
+	char *str = convert(num, 8, 0);
+	int count = 0;
 
-	int i = BUFF_SIZE - 2;
-	unsigned long int num = va_arg(types, unsigned long int);
-	unsigned long int init_num = num;
-
-	UNUSED(width);
-
-	num = convert_size_unsgnd(num, size);
-
-	if (num == 0)
-		buffer[i--] = '0';
-
-	buffer[BUFF_SIZE - 1] = '\0';
-
-	while (num > 0)
-	{
-		buffer[i--] = (num % 8) + '0';
-		num /= 8;
-	}
-
-	if (flags & F_HASH && init_num != 0)
-		buffer[i--] = '0';
-
-	i++;
-
-	return (write_unsgnd(0, i, buffer, flags, width, precision, size));
+	if (f->hash == 1 && str[0] != '0')
+		count += _putchar('0');
+	count += _puts(str);
+	return (count);
 }
 
 /**
- * print_hexadecimal - handles x specifier
- * @types: list of arguments
- * @buffer: buffer array to handle print
- * @flags: calculates active flags
- * @width: width
- * @precision: precision specifier
- * @size: size specifier
- * Return: hexadecimal number print
+ * printf_hex - prints a number in lowercase base 16
+ * @l: va_list arguments from _printf
+ * @f: pointer to the struct flags that determines
+ * if a flag is passed to _printf
+ * Description: the function calls convert() which in turns converts the input
+ * number into the correct base and returns it as a string
+ * Return: the number of characters printed
  */
-int print_hexadecimal(va_list types, char buffer[],
-	int flags, int width, int precision, int size)
+int printf_hex(va_list l, flags_t *f)
 {
-	return (print_hexa(types, "0123456789abcdef", buffer,
-		flags, 'x', width, precision, size));
+	unsigned int num = va_arg(l, unsigned int);
+	char *str = convert(num, 16, 1);
+	int count = 0;
+
+	if (f->hash == 1 && str[0] != '0')
+		count += _puts("0x");
+	count += _puts(str);
+	return (count);
 }
 
 /**
- * print_hexa_upper - handles X specifiers
- * @types: list of arguments
- * @buffer: buffer array to handle print
- * @flags: calculates active flags
- * @width: width
- * @precision: precision specifiern
- * @size: size specifier
- * Return: upper hexadecimal number print
+ * printf_Hex - prints a number in uppercase base 16
+ * @l: va_list arguments from _printf
+ * @f: pointer to the struct that determines
+ * if a flag is passed to _printf
+ * Description: the function calls convert() which in turns converts the input
+ * number into the correct base and returns it as a string
+ * Return: the number of characters printed
  */
-int print_hexa_upper(va_list types, char buffer[],
-	int flags, int width, int precision, int size)
+int printf_Hex(va_list l, flags_t *f)
 {
-	return (print_hexa(types, "0123456789ABCDEF", buffer,
-		flags, 'X', width, precision, size));
-}
+	unsigned int num = va_arg(l, unsigned int);
+	char *str = convert(num, 16, 0);
+	int count = 0;
 
-/**
- * print_hexa - handles X & x specifiers
- * @types: list of arguments
- * @map_to: array of values to map the number to
- * @buffer: buffer array to handle print
- * @flags: calculates active flags
- * @flag_ch: calculates active flags
- * @width: width
- * @precision: precision specifier
- * @size: size specifier
- * Return: upper or lower case hexadecimal print
- */
-int print_hexa(va_list types, char map_to[], char buffer[],
-	int flags, char flag_ch, int width, int precision, int size)
-{
-	int i = BUFF_SIZE - 2;
-	unsigned long int num = va_arg(types, unsigned long int);
-	unsigned long int init_num = num;
-
-	UNUSED(width);
-
-	num = convert_size_unsgnd(num, size);
-
-	if (num == 0)
-		buffer[i--] = '0';
-
-	buffer[BUFF_SIZE - 1] = '\0';
-
-	while (num > 0)
-	{
-		buffer[i--] = map_to[num % 16];
-		num /= 16;
-	}
-
-	if (flags & F_HASH && init_num != 0)
-	{
-		buffer[i--] = flag_ch;
-		buffer[i--] = '0';
-	}
-
-	i++;
-
-	return (write_unsgnd(0, i, buffer, flags, width, precision, size));
+	if (f->hash == 1 && str[0] != '0')
+		count += _puts("0X");
+	count += _puts(str);
+	return (count);
 }

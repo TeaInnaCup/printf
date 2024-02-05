@@ -4,9 +4,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#define S_LONG 2
-#define S_SHORT 1
-
 /**
  * struct flags - struct containing flags to "turn on"
  * when a flag specifier is passed to _printf()
@@ -54,14 +51,5 @@ int printf_reverse(va_list l, flags_t *f);
 int printf_non_printable(va_list l, flags_t *f);
 int printf_pointer(va_list l, flags_t *f);
 int printf_percent(va_list l, flags_t *f);
-
-int get_size(const char *format, int *i);
-long int convert_size_number(long int num, int size);
-long int convert_size_unsigned(unsigned long int num, int size);
-
-int get_width(const char *format, int *i, va_list list);
-int check_digit(char c);
-
-int get_precision(const char *format, int *i, va_list list);
 
 #endif

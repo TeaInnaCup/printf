@@ -51,7 +51,7 @@ in error for the custom _printf.
 
 
 To debug this,
-edit the second-to-the-last line of main.c partaining to the custom _printf functing, i.e.
+edit the second-to-the-last line of main.c partaining to the custom _printf function, i.e.
 
 	_printf("Unknown:[%r]\n");
 
